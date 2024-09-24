@@ -15,14 +15,15 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ExpanseServiceImp implements ExpanseService{
+public class ExpanseServiceImp implements ExpanseService {
     private final ExpanseRepository expanseRepository;
 
 
-    public Expanse postExpanse(ExpanseDTO expanseDTO){
-        return saveOrUpdateExpanse(new Expanse(),expanseDTO);
+    public Expanse postExpanse(ExpanseDTO expanseDTO) {
+        return saveOrUpdateExpanse(new Expanse(), expanseDTO);
     }
-    private Expanse saveOrUpdateExpanse(Expanse expanse, ExpanseDTO expanseDTO){
+
+    private Expanse saveOrUpdateExpanse(Expanse expanse, ExpanseDTO expanseDTO) {
 
         expanse.setTitle(expanseDTO.getTitle());
         expanse.setDate(expanseDTO.getDate());
@@ -33,18 +34,37 @@ public class ExpanseServiceImp implements ExpanseService{
         return expanseRepository.save(expanse);
     }
 
-    public List<Expanse> getAllExpanses(){
+    public List<Expanse> getAllExpanses() {
         return expanseRepository.findAll().stream()
                 .sorted(Comparator.comparing(Expanse::getDate).reversed())
                 .collect(Collectors.toList());
     }
 
-    public Expanse getExpanseByid(Long id){
+    public Expanse updateExpanse(Long id, ExpanseDTO expanseDTO) {
         Optional<Expanse> optionalExpanse = expanseRepository.findById(id);
-        if (optionalExpanse.isPresent()){
+        if (optionalExpanse.isPresent()) {
+            return saveOrUpdateExpanse(optionalExpanse.get(), expanseDTO);
+        } else {
+            throw new EntityNotFoundException("Expanse is not present with id : " + id);
+        }
+
+    }
+
+    public Expanse getExpanseByid(Long id) {
+        Optional<Expanse> optionalExpanse = expanseRepository.findById(id);
+        if (optionalExpanse.isPresent()) {
             return optionalExpanse.get();
-        }else {
-            throw new EntityNotFoundException("Expanse is not present with id : "+id);
+        } else {
+            throw new EntityNotFoundException("Expanse is not present with id : " + id);
+        }
+    }
+
+    public void deleteExpanse(Long id) {
+        Optional<Expanse> optionalExpanse = expanseRepository.findById(id);
+        if (optionalExpanse.isPresent()) {
+            expanseRepository.deleteById(id);
+        } else {
+            throw new EntityNotFoundException("Expanse is not present with id : " + id);
         }
     }
 }

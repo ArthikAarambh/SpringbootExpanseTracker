@@ -18,29 +18,54 @@ public class ExpanseController {
     private final ExpanseService expanseService;
 
     @PostMapping
-    public ResponseEntity<?> postExpanse(@RequestBody ExpanseDTO dto){
+    public ResponseEntity<?> postExpanse(@RequestBody ExpanseDTO dto) {
         Expanse createdExpanse = expanseService.postExpanse(dto);
-        if(createdExpanse != null){
+        if (createdExpanse != null) {
             return ResponseEntity.status(HttpStatus.CREATED).body(createdExpanse);
 
-        }else {
+        } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllExpanses(){
+    public ResponseEntity<?> getAllExpanses() {
         return ResponseEntity.ok(expanseService.getAllExpanses());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?>getExpanseByid(@PathVariable Long id){
+    public ResponseEntity<?> getExpanseByid(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(expanseService.getExpanseByid(id));
-        }catch (EntityNotFoundException ex){
+        } catch (EntityNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong");
         }
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateExpanse(@PathVariable Long id, @RequestBody ExpanseDTO dto) {
+        try {
+            return ResponseEntity.ok(expanseService.updateExpanse(id, dto));
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong");
+        }
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteExpanse(@PathVariable Long id) {
+        try {
+            expanseService.deleteExpanse(id);
+            return ResponseEntity.ok(null);
+        } catch (EntityNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong");
+        }
+    }
+
 }

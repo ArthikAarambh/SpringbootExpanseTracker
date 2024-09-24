@@ -8,7 +8,12 @@ import java.util.List;
 public interface ExpanseService {
     Expanse postExpanse(ExpanseDTO expanseDTO);
 
-    List<Expanse>getAllExpanses();
+    List<Expanse> getAllExpanses();
+
     Expanse getExpanseByid(Long id);
+
+    Expanse updateExpanse(Long id, ExpanseDTO expanseDTO);
+
+    void deleteExpanse(Long id);
 
 }
