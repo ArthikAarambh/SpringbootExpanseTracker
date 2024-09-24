@@ -4,8 +4,14 @@ import com.ExpManager.ExpanseTracker.ExpanseTrackerApplication;
 import com.ExpManager.ExpanseTracker.dto.ExpanseDTO;
 import com.ExpManager.ExpanseTracker.entity.Expanse;
 import com.ExpManager.ExpanseTracker.repository.ExpanseRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,5 +31,20 @@ public class ExpanseServiceImp implements ExpanseService{
         expanse.setDescription(expanseDTO.getDescription());
 
         return expanseRepository.save(expanse);
+    }
+
+    public List<Expanse> getAllExpanses(){
+        return expanseRepository.findAll().stream()
+                .sorted(Comparator.comparing(Expanse::getDate).reversed())
+                .collect(Collectors.toList());
+    }
+
+    public Expanse getExpanseByid(Long id){
+        Optional<Expanse> optionalExpanse = expanseRepository.findById(id);
+        if (optionalExpanse.isPresent()){
+            return optionalExpanse.get();
+        }else {
+            throw new EntityNotFoundException("Expanse is not present with id : "+id);
+        }
     }
 }

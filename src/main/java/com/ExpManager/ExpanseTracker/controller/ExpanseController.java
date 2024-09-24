@@ -3,6 +3,7 @@ package com.ExpManager.ExpanseTracker.controller;
 import com.ExpManager.ExpanseTracker.dto.ExpanseDTO;
 import com.ExpManager.ExpanseTracker.entity.Expanse;
 import com.ExpManager.ExpanseTracker.services.Expanse.ExpanseService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -24,6 +25,22 @@ public class ExpanseController {
 
         }else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllExpanses(){
+        return ResponseEntity.ok(expanseService.getAllExpanses());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?>getExpanseByid(@PathVariable Long id){
+        try {
+            return ResponseEntity.ok(expanseService.getExpanseByid(id));
+        }catch (EntityNotFoundException ex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("something went wrong");
         }
     }
 }
